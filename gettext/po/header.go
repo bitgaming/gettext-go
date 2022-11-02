@@ -7,6 +7,7 @@ package po
 import (
 	"bytes"
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -99,8 +100,16 @@ func (p Header) String() string {
 	if p.XGenerator != "" {
 		fmt.Fprintf(&buf, `"%s: %s\n"`+"\n", "X-Generator", p.XGenerator)
 	}
-	for k, v := range p.UnknowFields {
-		fmt.Fprintf(&buf, `"%s: %s\n"`+"\n", k, v)
+
+	// print UnknowFields in alphabetical order
+	keys := make([]string, 0, len(p.UnknowFields))
+	for k := range p.UnknowFields {
+		keys = append(keys, k)
 	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		fmt.Fprintf(&buf, `"%s: %s\n"`+"\n", k, p.UnknowFields[k])
+	}
+
 	return buf.String()
 }
